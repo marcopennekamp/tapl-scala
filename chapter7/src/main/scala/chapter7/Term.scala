@@ -1,8 +1,7 @@
 package chapter7
 
+// TODO: Test the equals methods, especially with different infos.
 trait Term {
-
-  override def toString: String = toString(Context.empty)
 
   /**
     * @return The term in lambda string form, with variable names.
@@ -22,6 +21,14 @@ trait Term {
     */
   def substitute(j: Int, s: Term): Term = substitute(j, s, 0)
   protected def substitute(j: Int, s: Term, d: Int): Term
+
+  /**
+    * The equality method for Terms checks for equality modulo meta info.
+    */
+  override def equals(obj: Any): Boolean
+
+  override def toString: String = toString(Context.empty)
+
 }
 
 object Term {
@@ -51,6 +58,11 @@ object Term {
         this
       }
     }
+
+    override def equals(obj: Any): Boolean = obj match {
+      case Var(_, index2) => index == index2
+      case _ => false
+    }
   }
 
   object Var {
@@ -70,6 +82,11 @@ object Term {
 
     override protected def shift(c: Int, d: Int): Term = Abs(info, variableName, t1.shift(c + 1, d))
     override protected def substitute(j: Int, s: Term, d: Int): Term = Abs(info, variableName, t1.substitute(j, s, d + 1))
+
+    override def equals(obj: Any): Boolean = obj match {
+      case Abs(_, variableName2, s1) => variableName == variableName2 && t1 == s1
+      case _ => false
+    }
   }
 
   object Abs {
@@ -86,6 +103,11 @@ object Term {
 
     override protected def shift(c: Int, d: Int): Term = App(info, t1.shift(c, d), t2.shift(c, d))
     override protected def substitute(j: Int, s: Term, d: Int): Term = App(info, t1.substitute(j, s, d), t2.substitute(j, s, d))
+
+    override def equals(obj: Any): Boolean = obj match {
+      case App(_, s1, s2) => t1 == s1 && t2 == s2
+      case _ => false
+    }
   }
 
   object App {

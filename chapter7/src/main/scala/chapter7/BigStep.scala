@@ -2,10 +2,10 @@ package chapter7
 
 import Term._
 
-object BigStep {
+object BigStep extends Evaluator {
 
   // Evaluate the term via big-step semantics.
-  def evaluate(term: Term): EvaluationResult = bigStep(term)
+  override def evaluate(term: Term): EvaluationResult = bigStep(term)
 
   // The use of evaluateOrFailWith ensures that an unprocessed term is always reproduced in
   // its entirety inside EvaluationFailure. Since we are dealing with big-step semantics here,

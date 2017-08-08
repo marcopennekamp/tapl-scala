@@ -14,6 +14,8 @@ trait NamedTerm {
     */
   def toTerm(context: Context): Term
 
+  override def toString: String = toTerm(Context.empty).toString
+
 }
 
 object NamedTerm {

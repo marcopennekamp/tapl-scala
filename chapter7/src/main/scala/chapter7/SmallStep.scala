@@ -2,12 +2,12 @@ package chapter7
 
 import Term._
 
-object SmallStep {
+object SmallStep extends Evaluator {
 
   /**
     * Evaluate the term via small-step semantics.
     */
-  def evaluate(term: Term): EvaluationResult = {
+  override def evaluate(term: Term): EvaluationResult = {
     var termOpt = Option(term)
     var lastTerm = term
     while (termOpt.isDefined) {
