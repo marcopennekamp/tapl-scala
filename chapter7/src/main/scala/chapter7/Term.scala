@@ -2,6 +2,8 @@ package chapter7
 
 trait Term {
 
+  override def toString: String = toString(Context.empty)
+
   /**
     * @return The term in lambda string form, with variable names.
     */
@@ -63,7 +65,7 @@ object Term {
   case class Abs(info: Info, variableName: String, t1: Term) extends Term {
     override def toString(context: Context): String = {
       val (context2, name2) = context.pickFreshName(variableName)
-      "(\u03BB " + name2 + ". " + t1.toString(context2) + ")"
+      "(\u03BB" + name2 + ". " + t1.toString(context2) + ")"
     }
 
     override protected def shift(c: Int, d: Int): Term = Abs(info, variableName, t1.shift(c + 1, d))

@@ -4,7 +4,7 @@ import Term._
 
 object BigStep {
 
-  /* // Evaluate the term via big-step semantics.
+  // Evaluate the term via big-step semantics.
   def evaluate(term: Term): EvaluationResult = bigStep(term)
 
   // The use of evaluateOrFailWith ensures that an unprocessed term is always reproduced in
@@ -14,38 +14,17 @@ object BigStep {
     // B-Value
     case t if isValue(t) => EvaluationSuccess(t)
 
-    // B-IfTrue, B-IfFalse
-    case t@If(_, condition, thenTerm, elseTerm) =>
-      bigStep(condition).evaluateOrFailWith(t) {
-        case True(_) => bigStep(thenTerm)
-        case False(_) => bigStep(elseTerm)
-        case _ => EvaluationFailure(t)
-      }
-
-    // B-Succ
-    case t@Succ(info, t1) =>
+    // B-App
+    case t@App(_, t1, t2) =>
       bigStep(t1).evaluateOrFailWith(t) {
-        case nv if isNumericValue(nv) => EvaluationSuccess(Succ(info, nv))
-        case _ => EvaluationFailure(t)
-      }
-
-    // B-PredZero, B-PredSucc
-    case t@Pred(_, t1) =>
-      bigStep(t1).evaluateOrFailWith(t) {
-        case Zero(_) => EvaluationSuccess(Zero(dummyInfo))
-        case Succ(_, nv) if isNumericValue(nv) => EvaluationSuccess(nv)
-        case _ => EvaluationFailure(t)
-      }
-
-    // B-IsZeroZero, B-IsZeroSucc
-    case t@IsZero(_, t1) =>
-      bigStep(t1).evaluateOrFailWith(t) {
-        case Zero(_) => EvaluationSuccess(True(dummyInfo))
-        case Succ(_, nv) if isNumericValue(nv) => EvaluationSuccess(False(dummyInfo))
+        case Abs(_, x, t12) => bigStep(t2).evaluateOrFailWith(t) {
+          case v2 if isValue(v2) => bigStep(t12.substitute(0, v2))
+          case _ => EvaluationFailure(t)
+        }
         case _ => EvaluationFailure(t)
       }
 
     case t => EvaluationFailure(t)
-  } */
+  }
 
 }

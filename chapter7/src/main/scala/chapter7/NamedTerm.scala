@@ -12,19 +12,33 @@ trait NamedTerm {
     *
     * @return The term compiled from this named term.
     */
-  protected def toTerm(context: Context): Term
-
-  /**
-    * Compiles the named term to a term in an empty context.
-    */
-  def toTerm: Term = toTerm(Context.empty)
+  def toTerm(context: Context): Term
 
 }
 
 object NamedTerm {
 
+  object syntax {
+    implicit class AbsSyntax(variable: Symbol) {
+      def ->(n1: NamedTerm): NamedTerm = NAbs(variable.name, n1)
+    }
+
+    implicit def toVar(v1: Symbol): NamedTerm = NVar(v1.name)
+
+    // The application operator must have a higher precedence than the abstraction operator.
+    // This leads to nicer syntax, i.e. x -> x ! x instead of x -> (x ! x).
+
+    implicit class AppVarSyntax(v1: Symbol) {
+      def /(n2: NamedTerm): NamedTerm = NApp(v1, n2)
+    }
+
+    implicit class AppSyntax(n1: NamedTerm) {
+      def /(n2: NamedTerm): NamedTerm = NApp(n1, n2)
+    }
+  }
+
   case class NVar(info: Info, name: String) extends NamedTerm {
-    override protected def toTerm(context: Context): Term = {
+    override def toTerm(context: Context): Term = {
       val index = context(name).getOrElse(throw new RuntimeException(s"Variable with the name '$name' not found."))
       Var(info, index)
     }
@@ -35,7 +49,7 @@ object NamedTerm {
   }
 
   case class NAbs(info: Info, variableName: String, t1: NamedTerm) extends NamedTerm {
-    override protected def toTerm(context: Context): Term = {
+    override def toTerm(context: Context): Term = {
       val context2 = context.withName(variableName)
       Abs(info, variableName, t1.toTerm(context2))
     }
@@ -46,7 +60,7 @@ object NamedTerm {
   }
 
   case class NApp(info: Info, t1: NamedTerm, t2: NamedTerm) extends NamedTerm {
-    override protected def toTerm(context: Context): Term = App(info, t1.toTerm(context), t2.toTerm(context))
+    override def toTerm(context: Context): Term = App(info, t1.toTerm(context), t2.toTerm(context))
   }
 
   object NApp {

@@ -7,13 +7,13 @@ object SmallStep {
   /**
     * Evaluate the term via small-step semantics.
     */
-  def evaluate(context: Context, term: Term): EvaluationResult = {
+  def evaluate(term: Term): EvaluationResult = {
     var termOpt = Option(term)
     var lastTerm = term
     while (termOpt.isDefined) {
       val current = termOpt.get
       lastTerm = current
-      termOpt = step(context, current)
+      termOpt = step(current)
     }
 
     // At this point, termOpt is a None. So lastTerm is our result term. We need to decide
@@ -28,7 +28,7 @@ object SmallStep {
     * Execute one step of our small-step semantics. If the term is ill-formed or if no further reductions
     * can be applied, None is returned. Otherwise, exactly one step will be applied.
     */
-  private def step(context: Context, term: Term): Option[Term] = term match {
+  private def step(term: Term): Option[Term] = term match {
     // E-AppAbs
     case App(_, Abs(_, _, t12), v2) if isValue(v2) =>
       // First we need to shift the term by 1, because it will be inserted one lambda abstraction down.
@@ -41,10 +41,10 @@ object SmallStep {
       Some(subsTerm.shift(-1))
 
     // E-App2
-    case App(info, v1, t2) if isValue(v1) => step(context, t2).map(t => App(info, v1, t))
+    case App(info, v1, t2) if isValue(v1) => step(t2).map(t => App(info, v1, t))
 
     // E-App1
-    case App(info, t1, t2) => step(context, t1).map(t => App(info, t, t2))
+    case App(info, t1, t2) => step(t1).map(t => App(info, t, t2))
 
     case _ => None
   }

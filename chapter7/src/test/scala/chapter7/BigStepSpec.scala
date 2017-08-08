@@ -5,45 +5,99 @@ import Terms._
 import org.scalatest.{FlatSpec, Matchers}
 
 class BigStepSpec extends FlatSpec with Matchers {
-  /* "BigStep" should "evaluate ifFalse" in {
-    BigStep.evaluate(ifFalse) should matchPattern {
-      case EvaluationSuccess(False(_)) =>
+  "BigStep" should "evaluate id to id" in {
+    BigStep.evaluate(id) should matchPattern {
+      case EvaluationSuccess(`id`) =>
     }
   }
 
-  it should "evaluate ifTrueIfFalse" in {
-    BigStep.evaluate(ifTrueIfFalse) should matchPattern {
-      case EvaluationSuccess(False(_)) =>
+  it should "evaluate (id id) to id" in {
+    BigStep.evaluate(idId) should matchPattern {
+      case EvaluationSuccess(`id`) =>
     }
   }
 
-  it should "evaluate ifTrueTrue" in {
-    BigStep.evaluate(ifTrueTrue) should matchPattern {
-      case EvaluationSuccess(True(_)) =>
+  it should "evaluate (id (id (\\z. id z))) to \\z. id z" in {
+    BigStep.evaluate(idZ) should matchPattern {
+      case EvaluationSuccess(Abs(_, "z", App(_, `id`, Var(_, 0)))) =>
     }
   }
 
-  it should "evaluate predSuccPredZero" in {
-    BigStep.evaluate(predSuccPredZero) should matchPattern {
-      case EvaluationSuccess(Zero(_)) =>
+  it should "evaluate tru to tru" in {
+    BigStep.evaluate(tru) should matchPattern {
+      case EvaluationSuccess(`tru`) =>
     }
   }
 
-  it should "evaluate complex" in {
-    BigStep.evaluate(complex) should matchPattern {
-      case EvaluationSuccess(Succ(_, Zero(_))) =>
+  it should "evaluate testTru to tru" in {
+    BigStep.evaluate(testTru) should matchPattern {
+      case EvaluationSuccess(`tru`) =>
     }
   }
 
-  it should "fail on invalidCond" in {
-    BigStep.evaluate(invalidCond) should matchPattern {
-      case EvaluationFailure(If(_, Zero(_), False(_), True(_))) =>
+  it should "evaluate testFls to fls" in {
+    BigStep.evaluate(testFls) should matchPattern {
+      case EvaluationSuccess(`fls`) =>
     }
   }
 
-  it should "fail on invalidNum" in {
-    BigStep.evaluate(invalidNum) should matchPattern {
-      case EvaluationFailure(Succ(_, Pred(_, Succ(_, True(_))))) =>
+  it should "evaluate andTruTru to tru" in {
+    BigStep.evaluate(andTruTru) should matchPattern {
+      case EvaluationSuccess(`tru`) =>
     }
-  } */
+  }
+
+  it should "evaluate andTruFls to fls" in {
+    BigStep.evaluate(andTruFls) should matchPattern {
+      case EvaluationSuccess(`fls`) =>
+    }
+  }
+
+  it should "evaluate andFlsTru to fls" in {
+    BigStep.evaluate(andFlsTru) should matchPattern {
+      case EvaluationSuccess(`fls`) =>
+    }
+  }
+
+  it should "evaluate andFlsFls to fls" in {
+    BigStep.evaluate(andFlsFls) should matchPattern {
+      case EvaluationSuccess(`fls`) =>
+    }
+  }
+
+  it should "evaluate orTruTru to tru" in {
+    BigStep.evaluate(orTruTru) should matchPattern {
+      case EvaluationSuccess(`tru`) =>
+    }
+  }
+
+  it should "evaluate orTruFls to tru" in {
+    BigStep.evaluate(orTruFls) should matchPattern {
+      case EvaluationSuccess(`tru`) =>
+    }
+  }
+
+  it should "evaluate orFlsTru to tru" in {
+    BigStep.evaluate(orFlsTru) should matchPattern {
+      case EvaluationSuccess(`tru`) =>
+    }
+  }
+
+  it should "evaluate orFlsFls to fls" in {
+    BigStep.evaluate(orFlsFls) should matchPattern {
+      case EvaluationSuccess(`fls`) =>
+    }
+  }
+
+  it should "evaluate notTru to fls" in {
+    BigStep.evaluate(notTru) should matchPattern {
+      case EvaluationSuccess(`fls`) =>
+    }
+  }
+
+  it should "evaluate notFls to tru" in {
+    BigStep.evaluate(notFls) should matchPattern {
+      case EvaluationSuccess(`tru`) =>
+    }
+  }
 }

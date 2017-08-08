@@ -6,4 +6,6 @@ package object chapter7 {
   case class Info(line: Int, column: Int)
 
   val dummyInfo: Info = Info(0, 0)
+
+  implicit def toTerm(namedTerm: NamedTerm): Term = namedTerm.toTerm(Context.empty)
 }
