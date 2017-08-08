@@ -25,33 +25,18 @@ trait Term {
 object Term {
 
   /**
-    * @param line The line that the term appears on in the source file.
-    * @param column The column of the first character of the term in the source file.
-    */
-  case class Info(line: Int, column: Int)
-
-  val dummyInfo: Info = Info(0, 0)
-
-  /**
     * A variable term.
     *
     * @param index The De Bruijn index of the variable.
-    * @param contextLength The total length of the context in which the variable occurs.
     */
-  case class Var(info: Info, index: Int, contextLength: Int) extends Term {
-    override def toString(context: Context): String = {
-      if (context.length == contextLength) {
-        context(index).variableName
-      } else {
-        "[bad index]"
-      }
-    }
+  case class Var(info: Info, index: Int) extends Term {
+    override def toString(context: Context): String = context(index).variableName
 
     override protected def shift(c: Int, d: Int): Term = {
       if (index >= c) {
-        Var(info, index + d, contextLength + d)
+        Var(info, index + d)
       } else {
-        Var(info, index, contextLength + d)
+        Var(info, index)
       }
     }
 
@@ -64,6 +49,10 @@ object Term {
         this
       }
     }
+  }
+
+  object Var {
+    def apply(index: Int): Var = Var(dummyInfo, index)
   }
 
   /**
@@ -81,6 +70,10 @@ object Term {
     override protected def substitute(j: Int, s: Term, d: Int): Term = Abs(info, variableName, t1.substitute(j, s, d + 1))
   }
 
+  object Abs {
+    def apply(variableName: String, t1: Term): Abs = Abs(dummyInfo, variableName, t1)
+  }
+
   /**
     * A lambda application term.
     */
@@ -91,6 +84,10 @@ object Term {
 
     override protected def shift(c: Int, d: Int): Term = App(info, t1.shift(c, d), t2.shift(c, d))
     override protected def substitute(j: Int, s: Term, d: Int): Term = App(info, t1.substitute(j, s, d), t2.substitute(j, s, d))
+  }
+
+  object App {
+    def apply(t1: Term, t2: Term): App = App(dummyInfo, t1, t2)
   }
 
   /**

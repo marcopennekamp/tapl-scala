@@ -13,6 +13,8 @@ trait EvaluationResult {
       case EvaluationFailure(_) => EvaluationFailure(failResult)
     }
   }
+
+  def toOption: Option[Term]
 }
 
 /**
@@ -20,6 +22,7 @@ trait EvaluationResult {
   */
 case class EvaluationFailure(rest: Term) extends EvaluationResult {
   override def flatMap(f: Term => EvaluationResult): EvaluationResult = this
+  override def toOption: Option[Term] = None
 }
 
 /**
@@ -27,4 +30,5 @@ case class EvaluationFailure(rest: Term) extends EvaluationResult {
   */
 case class EvaluationSuccess(result: Term) extends EvaluationResult {
   override def flatMap(f: Term => EvaluationResult): EvaluationResult = f(result)
+  override def toOption: Option[Term] = Some(result)
 }

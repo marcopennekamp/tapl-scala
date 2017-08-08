@@ -1,11 +1,11 @@
 package chapter7
 
-import Term._
+import NamedTerm._
+import Combinators._
 
 object Terms {
-  val di = dummyInfo
-  val emptyContext = new Context(Seq())
-
-  val id = Abs(di, "x", Var(di, 0, 1))
-  val applyIdToItself = App(di, id, id)
+  val termId = id.toTerm
+  val termIdId = NApp(id, id).toTerm
+  val termIdZ = NApp(id, NApp(id, NAbs("z", NApp(id, NVar("z"))))).toTerm
+  val termTru = tru.toTerm
 }

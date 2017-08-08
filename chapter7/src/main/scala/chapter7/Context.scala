@@ -6,7 +6,7 @@ case class ContextEntry(variableName: String, binding: Binding)
 
 /**
   * A context representing the current variable bindings in order of binding,
-  * with the innermost bind being the last entry.
+  * with the innermost bind being the first entry.
   */
 class Context(entries: Seq[ContextEntry]) {
 
@@ -19,6 +19,17 @@ class Context(entries: Seq[ContextEntry]) {
     * @param index The De Bruijn index of the variable.
     */
   def apply(index: Int): ContextEntry = entries(index)
+
+  /**
+    * @param name The name of the variable.
+    * @return The index of the innermost context-entry that shares the variable name.
+    */
+  def apply(name: String): Option[Int] = {
+    names.indexOf(name) match {
+      case index if index >= 0 && index < length => Some(index)
+      case _ => None
+    }
+  }
 
   /**
     * @return The names of the variables in the context.
@@ -37,8 +48,16 @@ class Context(entries: Seq[ContextEntry]) {
     }
 
     val namePrime = createName(counter)
-    val entry = ContextEntry(namePrime, Binding())
-    (new Context(entry +: entries), namePrime)
+    (withName(namePrime), namePrime)
   }
 
+  def withName(name: String): Context = {
+    val entry = ContextEntry(name, Binding())
+    new Context(entry +: entries)
+  }
+
+}
+
+object Context {
+  val empty = new Context(Seq())
 }
